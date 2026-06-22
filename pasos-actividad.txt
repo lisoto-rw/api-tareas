@@ -259,4 +259,52 @@ nano .github/workflows/build-test-deploy.yml
 
 se lo completo con contenido dado por el DOCENTE
 
+al terminar de configurar el archivo y preparar el githubaction
+
+podemos observar en la pagina principal del proyecto en paquetes
+
+docker pull ghcr.io/lisoto-rw/api-tareas:4b81ea09523057b102d0740d350d7e9a61c299ca
+
+docker pull ghcr.io/lisoto-rw/api-tareas:latest
+
+
+luego vamos a probar descargarlo
+Si la imagen es pública o accesible, no será necesario ejecutar docker login ghcr.io.
+
+docker pull ghcr.io/lisoto-rw/api-tareas:latest
+
+una vez mostrado el mensaje de exito podemos correr esta imagen como
+docker run -d --name api-tareas-github -p 3000:3000 ghcr.io/lisoto-rw/api-tareas:latest
+
+y accedemos a localhost:3000/tareas
+vemos que la imagen que usamos funcioan ahora la detenemos
+
+detenemos y eliminamos
+docker stop api-tareas-github
+docker rm api-tareas-github
+
+luego de esto vamos a crear un entorno de testing con docker compose
+creamos una carpeta y accedemos
+mkdir -p ~/api-tareas-testing
+cd ~/api-tareas-testing
+
+luego pegamos el contenido dado por el docente y hacemos en ese directorio
+docker compose pull
+docker compose up -d
+
+para verificar que esta funcionando
+docker ps
+curl http://localhost:3000/tareas
+
+luego para detenerlo y eliminar
+docker stop api-tareas-testing
+docker rm api-tareas-testing
+
+tambien se pede hacer en una linea
+docker compose pull && docker compose up -d
+
+tambien puede detenerlo y eliminarlo con
+docker compose down
+
+
 
