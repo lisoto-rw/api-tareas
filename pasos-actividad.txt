@@ -306,5 +306,5 @@ docker compose pull && docker compose up -d
 tambien puede detenerlo y eliminarlo con
 docker compose down
 
-
-
+investigar
+modificar en commit para el versionado semantico con los tags.
