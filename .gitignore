@@ -1,0 +1,17 @@
+# Dependencias de Node (Obligatorio)
+node_modules/
+
+# Variables de entorno (Seguridad)
+.env
+
+# Archivos del Sistema Operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+*.log
+
+# Si por alguna razón se usa Python en el mismo repo:
+venv/
+.venv/
