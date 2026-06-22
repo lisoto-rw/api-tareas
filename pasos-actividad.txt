@@ -1,0 +1,262 @@
+Propósito de la actividad
+
+Construir, explicar y mejorar un pipeline CI/CD básico
+para una API Node.js, 
+
+incorporando 
+pruebas automatizadas, 
+Docker, 
+GitHub Actions, 
+publicación de imagen en GitHub Container Registry y 
+despliegue en un entorno de testing mediante Docker Compose. 
+
+Trabajo grupal, con presentación oral. Cada equipo deberá evidenciar el recorrido completo: 
+
+Commit → Push → GitHub Actions → Build → Test → Docker Build → GHCR → Docker Compose → Testing. 
+
+
+
+PASO 1
+Visualizar los videos propuestos sobre DevOps, CI/CD y pipelines de automatización. Luego, revisar la guía implementable de la API Tareas para reconocer el caso práctico que se trabajará durante la actividad.
+Mientras mirás los materiales, tomá nota de:
+
+    Qué problemas aparecen cuando la integración y el despliegue se realizan manualmente.
+    
+    cosas buenas sinergias entre desarrollo y operaciones, control de flujo de cambio de parte de desarrolladores a operaciones.
+
+    El "en mi máquina funciona": Que el código ande en la computadora de un compañero no asegura que ande en la tuya o en el servidor.
+    Errores humanos: Te podés olvidar de copiar un archivo, errarle a un comando o subir una versión vieja por accidente.
+    Pérdida de tiempo: En vez de programar, el equipo pierde horas configurando, instalando dependencias y subiendo archivos pesados a mano.
+    Miedo a desplegar: Como es difícil y estresante, se hace pocas veces al mes, acumulando demasiados cambios juntos (y si algo falla, buscar el error es una pesadilla).
+
+
+
+    Qué rol cumplen la colaboración, la automatización y el feedback en DevOps.
+
+    Colaboración: Rompe la pared entre los que programan (Dev) y los que mantienen los servidores (Ops). Todos tiran para el mismo lado y comparten la responsabilidad del proyecto.
+    Automatización: Es dejar que las máquinas hagan el trabajo aburrido y repetitivo (probar el código, armar la imagen de Docker, subirla). Esto evita errores y ahorra tiempo.
+    Feedback (Devolución rápida): Es saber ya mismo si lo que hiciste está bien o mal. Si rompiste algo, el sistema te avisa en minutos para que lo arregles enseguida, antes de que llegue al usuario.
+
+
+
+    Qué etapas forman parte de un pipeline CI/CD (no solo integracion sino tambien algo vinculado al despliegue).
+    DESCUBRIR BIEN LOS PASOS DE UN CI Y CD
+
+    1. push-pull request activa el pipeline en la rama master(alguna especificada)
+    2. se hace un build para construir el proyecto
+    3. 
+    test
+    
+    
+    Qué sucede cuando una etapa del pipeline falla.
+    no se despliega aunque es posible despegarlo si se quisiera, 
+    si hay una falla en el pipeline, no se generan las imagenes correspondientes, que seguian almacenadas en el contenedor del registro para luego descargar y desplegar, no se generan entonces no se puede poner en produccion o testing nada o en algun otro ambito.
+
+
+4. ¿Qué sucede cuando una etapa del pipeline falla?
+
+El proceso se frena de inmediato: Si los tests fallan o la imagen de Docker no se puede armar, el pipeline se detiene como un botón de emergencia de una fábrica. No se pasa a la siguiente etapa.
+    Alerta roja: GitHub Actions les va a mostrar una cruz roja gigante y (por lo general) manda un mail avisando qué falló.
+    Seguridad: El entorno de testing (o el servidor real) queda a salvo. El código roto nunca llega a desplegarse, asegurando que la aplicación que ven los usuarios siga funcionando perfectamente con la versión anterior.
+
+
+
+
+
+
+
+PASO 2 (ESTO ES TEORICO CRITICO)
+Exploración del repositorio y diagnóstico inicial (30 min)
+
+¿Qué tenés que hacer?
+    Ingresar al repositorio de la API Tareas, revisar su estructura y reconocer qué elementos deben modificarse o agregarse para implementar el pipeline.
+
+        Identificar el archivo principal de la aplicación Node.js.
+        Reconocer las rutas o endpoints disponibles.
+        Detectar si existen pruebas automatizadas previas.
+        Explicar brevemente qué riesgos tendría desplegar la API sin tests ni pipeline.
+
+Producto esperado: breve diagnóstico del punto de partida del proyecto.
+
+QUE PASARIA SI LO QUISIERA DESPLEGAR, RIESGOS DE DESPLEGFAR SIN TEST NI PIPELINE.
+DE QUE MANERA LO HECHO SI QUEREMOS DESPLEGAR PODRIAMOS HACERLO PERO QUE ERRORES O PROBLEMAS PODRIAMOS TENER, VINCULAR CON TEORIA VINCULADA EN LA ACTIVIDAD 1.
+JUICIO CRITICO
+
+
+
+PASO 3 (ACTIVIDAD IMPLEMENTACION)
+Implementación de pruebas automatizadas (45 a 60 min)
+
+¿Qué tenés que hacer?
+Incorporar pruebas automatizadas básicas para validar el comportamiento de la API. 
+Se sugiere utilizar Jest y Supertest.
+
+    Separar la aplicación Express del archivo que inicia el servidor, si corresponde.
+    Crear una carpeta de pruebas, por ejemplo __tests__.
+    Implementar pruebas para endpoints como GET /tareas, GET /tareas/:id y POST /tareas.
+    Ejecutar las pruebas con npm test.
+
+
+Evidencia requerida: captura o registro de la ejecución exitosa de npm test y explicación breve de qué valida cada prueba.
+
+Investigar JEST Y SUPERTESTS para pruebas
+
+
+
+PARA EL PASO 3 SE COMIENZA A UTILIZAR UN REPOSITORIO COMPARTIDO POR EL DOCENTE.
+
+
+GUIARLO EN PRIMERA ISNTANCIAS
+
+AGREGAR TEST
+SEPARAR APLICACION DEL servidor
+
+
+El flujo pipeline buscado es el siguiente:
+Desarrollador
+   ↓
+Push a GitHub
+   ↓
+GitHub Actions
+   ↓
+Instalación de dependencias
+   ↓
+Ejecución de pruebas
+   ↓
+Construcción de imagen Docker
+   ↓
+Publicación en GHCR
+   ↓
+Instancia de testing con Docker Compose
+
+
+Requisitos previos En el equipo de desarrollo
+
+    1.Git instalado.  -> git version 2.47.3
+        git --version
+
+    2.Node.js instalado. -> v24.15.0
+        node -v or node --version
+
+    3.npm instalado. -> 11.12.1
+        npm -v
+
+    4.Docker instalado. -> Docker version 29.6.0, build fb59821
+        docker --version
+        docker info
+        docker run hello-world
+
+        docker permission denied
+        sudo groupadd docker
+        sudo usermod -aG docker $USER
+        newgrp docker
+        docker ps
+
+
+    importante para instalar
+    https://www.reddit.com/r/docker/comments/1plsy7t/how_do_i_install_docker_et_all_in_debian_13_trixie/
+    sudo nano /etc/apt/sources.list.d/docker.list
+
+    5.Docker Compose disponible mediante docker compose. -> Docker Compose version v5.1.4
+        docker compose version
+
+    6.Acceso al repositorio GitHub.
+
+
+
+Para la guia pide hacer una modificacion de la estructura del proyecto
+
+En este momento, en tu archivo app.js tenés mezcladas dos responsabilidades distintas:
+
+Definir la API: Configurar las rutas (/tareas), usar express.json(), etc.
+
+Encender el servidor: El método app.listen(PORT, ...) que hace que tu compu se ponga a escuchar en el puerto 3000.
+
+
+¿Por qué te piden separarlo? (El motivo con Jest, Supertest y Docker)
+Para Supertest: Supertest es una librería que sirve para probar tus rutas simulando peticiones HTTP (como si usaras Postman, pero en código). Para hacer esto de manera eficiente, Supertest necesita la configuración de Express (app), pero NO necesita que el servidor esté prendido escuchando en un puerto. Si dejas el app.listen() ahí, cada vez que corras los tests de Jest, la aplicación va a intentar levantar el servidor real en el puerto 3000, lo que puede dar errores de "puerto ya ocupado" o dejar los procesos colgados.
+
+Para Docker: Al separar el arranque de la lógica, tu contenedor de Docker va a llamar exclusivamente al archivo que enciende el servidor (server.js), mientras que Jest solo va a llamar al archivo que tiene la lógica (app.js).
+
+La solución es dividir tu app.js actual en dos archivos: 
+uno se va a seguir llamando app.js (solo lógica) y 
+vamos a crear uno nuevo llamado server.js (solo encendido).
+
+ajuste de packages.json
+
+{
+  "scripts": {
+    "start": "node server.js"
+  }
+}
+
+
+INSTALACION DE HERRAMIENTAS DE TEST
+npm install --save-dev jest supertest
+
+Jest permite ejecutar pruebas automatizadas en proyectos JavaScript, mientras que Supertest permite realizar solicitudes HTTP simuladas contra una aplicación Express sin levantar manualmente el servidor.
+
+modificacion archivo packages.json
+"scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  }
+
+luego se crean un directorio y un archivo
+directorio 
+__tests__
+
+archivo 
+tareasTest.js
+
+con un contenido dado por el DOCENTE
+
+y se ejecutar
+
+npm test
+
+gracias a este primer test nos dimos cuenta que nuestro mensaje exitoso de tarea creada era incorrecto se cambio de 200 a 201
+
+luego creamos un archivo Dockerfile
+
+Línea	                Función
+FROM node:22            alpine	Usa una imagen liviana de Node.js
+WORKDIR /app	        Define el directorio de trabajo dentro del contenedor
+COPY package*.json ./	Copia los archivos de dependencias
+RUN npm ci --omit=dev	Instala solo dependencias necesarias para producción
+COPY . .	            Copia el código fuente al contenedor
+EXPOSE 3000	            Documenta el puerto usado por la API
+CMD ["npm", "start"]	Define el comando de inicio
+
+luego creamos un archivo .dockerignore
+
+e intentamos construir una imagen localmente
+
+docker build -t api-tareas .
+
+ERROR: permission denied while trying to connect to the docker API at unix:///var/run/docker.sock
+para fixear esto 
+
+sudo chmod 666 /var/run/docker.sock
+docker build -t api-tareas .
+docker run -d --name api-tareas-local -p 3000:3000 api-tareas
+
+luego se probo con
+curl http://localhost:3000/tareas
+
+se pudo ver los logs
+docker logs api-tareas-local
+
+finalmente se detuvo y elimino
+docker stop api-tareas-local
+docker rm api-tareas-local
+
+luego se creo el directorio
+mkdir -p .github/workflows
+
+y el archivo dentro
+nano .github/workflows/build-test-deploy.yml
+
+se lo completo con contenido dado por el DOCENTE
+
+
