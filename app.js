@@ -10,11 +10,6 @@ app.use(express.json());
 // se define /api como prefijo global para todas las rutas
 app.use('/tareas', tareasRoutes);      
 
-// constante con el numero del puerto
-const PORT = 3000;
 
-// se pone al  servidor a escuchar peticiones en PORT 
-// y cuando arranca muestra el mensaje en consola
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}...`);
-});
+// Exportamos "app" para que lo usen el servidor y los tests
+module.exports = app;
