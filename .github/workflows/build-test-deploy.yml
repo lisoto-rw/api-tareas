@@ -1,0 +1,63 @@
+name: Build Test Deploy
+
+#al recibir push a la rama main
+on:
+  push:
+    branches:
+      - main
+
+# y tenga permiso de lectura de contenido y escritura para los packages
+permissions:
+  contents: read
+  packages: write
+
+#se van a realizar lo siguiente
+jobs:
+  #se hacen buils and test como primera etapa o instancia, sobre una imagen de ubuntu
+  build-test:
+    name: Build y test Node.js
+    runs-on: ubuntu-latest
+    
+    steps:
+      #descargara el codigo, ejecutandolo una serie de pasos predefinidos
+      - name: Descargar código
+        uses: actions/checkout@v4
+      #va a configurar nodejs con otros pasos definidos y ejecuta npm
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      #va a instalar las dependencias que el proyecto necesita
+      - name: Instalar dependencias
+        run: npm ci
+      #va a ejecutar los test
+      - name: Ejecutar tests
+        run: npm test
+
+  #siguiente jobs, es construir un docker y subirlo al registro de contenedores. sobre una imagen de ubuntu y necesitar para poder empezar buid-test que finalice exitosamente
+  docker-build-push:
+    name: Build y publicación Docker
+    runs-on: ubuntu-latest
+    needs: build-test
+
+    steps:
+      #toma el codigo construido y pasado por los test
+      - name: Descargar código
+        uses: actions/checkout@v4
+      #lo publica dentro del registry usando una imagen de docker. sin uso de token porqe es repo publico, sino deberia ponerse el token donde dice token.lo va a publicar con un determinado password y usuario. 
+      - name: Login en GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      #lo ultimo es publicar dentro de lo que es el registro de contenedores la ultima imagen del docker y poder colocar un tag en vez de latest para una version especifica, utilizar versionado semantico de los numeros. si se lo solicita.
+      - name: Construir y publicar imagen Docker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/api-tareas:latest
+            ghcr.io/${{ github.repository_owner }}/api-tareas:${{ github.sha }}
