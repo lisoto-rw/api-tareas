@@ -1,5 +1,5 @@
 const app = require('./app'); // Traemos la app configurada del otro archivo
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Acá se pone al servidor a escuchar peticiones
 app.listen(PORT, () => {
