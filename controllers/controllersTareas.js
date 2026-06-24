@@ -45,7 +45,7 @@ const crearTarea = (req, res) => {
     
     tareas.push(nueva);
 
-    res.status(200).json(nueva);
+    res.status(201).json(nueva);
 };
 
 module.exports = {
