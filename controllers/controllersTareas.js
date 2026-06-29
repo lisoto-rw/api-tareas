@@ -36,7 +36,7 @@ const obtenerTareaPorId = (req, res) => {
 };
 
 const crearTarea = (req, res) => {
-    // se crea la tarea  q se quiere agregar a la lista
+    // se crea la tarea  q se quiere agregar a la listaa
     const nueva = {
         id: tareas.length + 1,
         titulo: req.body.titulo,
