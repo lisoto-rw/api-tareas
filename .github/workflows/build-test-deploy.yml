@@ -67,7 +67,7 @@ jobs:
       # Este paso lee el package.json DESPUÉS de que corriera semantic-release.
       # Si semantic-release cambió la versión, la toma; si no, toma la que ya estaba.
       # Así el Build de Docker NUNCA se queda vacío.
-       Gentileza de una pequeña lectura del archivo:
+      #Gentileza de una pequeña lectura del archivo:
       - name: Extraer versión del package.json
         id: get_version
         run: |
