@@ -84,6 +84,13 @@ jobs:
       #toma el codigo construido y pasado por los test
       - name: Descargar código
         uses: actions/checkout@v4
+      # NUEVO PASO: Docker lee el package.json por su cuenta
+      - name: Obtener versión del proyecto
+        id: info_proyecto
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version_actual=$VERSION" >> $GITHUB_OUTPUT
+
       #lo publica dentro del registry usando una imagen de docker. sin uso de token porqe es repo publico, sino deberia ponerse el token donde dice token.lo va a publicar con un determinado password y usuario. 
       - name: Login en GitHub Container Registry
         uses: docker/login-action@v3
@@ -98,6 +105,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/api-tareas:${{ needs.release.outputs.new_version }}
+            ghcr.io/${{ github.repository_owner }}/api-tareas:${{ steps.info_proyecto.outputs.version_actual }}
             ghcr.io/${{ github.repository_owner }}/api-tareas:latest
             ghcr.io/${{ github.repository_owner }}/api-tareas:${{ github.sha }}
