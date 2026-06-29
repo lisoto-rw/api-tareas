@@ -8,8 +8,10 @@ on:
 
 # y tenga permiso de lectura de contenido y escritura para los packages
 permissions:
-  contents: read
+  contents: write
   packages: write
+  issues: write
+  pull-requests: write
 
 #se van a realizar lo siguiente
 jobs:
@@ -35,6 +37,45 @@ jobs:
       - name: Ejecutar tests
         run: npm test
 
+  #NUEVA ETAPA: Calcular la versión de forma automática
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    needs: build-test
+    outputs:
+      new_version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar dependencias de producción
+        run: npm ci
+
+      - name: Ejecutar Semantic Release
+        id: semrel
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      # Guardamos la versión calculada para pasársela a Docker
+      - name: Guardar versión generada
+        id: get_version
+        run: |
+          # Si se generó una nueva versión, la guardamos, si no, por defecto usamos '1.0.0'
+          if [ -f package.json ]; then
+            VERSION=$(node -p "require('./package.json').version")
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=1.0.0" >> $GITHUB_OUTPUT
+          fi
+          
   #siguiente jobs, es construir un docker y subirlo al registro de contenedores. sobre una imagen de ubuntu y necesitar para poder empezar buid-test que finalice exitosamente
   docker-build-push:
     name: Build y publicación Docker
@@ -59,6 +100,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/api-tareas:1.0.0
+            ghcr.io/${{ github.repository_owner }}/api-tareas:${{ needs.release.outputs.new_version }}
             ghcr.io/${{ github.repository_owner }}/api-tareas:latest
             ghcr.io/${{ github.repository_owner }}/api-tareas:${{ github.sha }}
