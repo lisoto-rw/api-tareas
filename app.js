@@ -7,7 +7,7 @@ const tareasRoutes = require('./routes/routesTareas');//importacion de rutas par
 app.use(express.json());
 
 
-// se define /api como prefijo global para todas las rutas
+// se define /api como prefijo global para todas las rutasss
 app.use('/tareas', tareasRoutes);      
 
 
